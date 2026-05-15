@@ -1,0 +1,126 @@
+======================================================================
+RAINFALL PATTERN PREDICTION FOR CHOMA, ZAMBIA
+Policy-Oriented Summary for Stakeholders
+======================================================================
+
+Generated: 2026-05-15 22:18
+Location: Choma, Southern Province, Zambia
+Data Period: 1990-2023
+
+======================================================================
+
+EXECUTIVE SUMMARY
+----------------------------------------------------------------------
+
+Historical Average Rainfall: 755 mm/year
+Recent 5-Year Average: 588 mm/year
+Trend: DECREASING
+Variability (CV): 0.25 (MODERATE)
+
+Extreme Rainfall Years (top 10%, >1004 mm): 1997, 2000, 2007, 2010
+Drought Years (bottom 10%, <534 mm): 1992, 1994, 2019, 2020
+
+(Thresholds based on 10th/90th percentiles of 1990–2023 annual totals — WMO percentile method)
+
+
+======================================================================
+IMPLICATIONS FOR AGRICULTURE
+======================================================================
+
+1. Rainfall declining: 588mm vs 755mm historical average
+   Implication: Reduced water availability for crops
+   Recommendation: Implement water conservation practices and shift planting calendars
+
+2. Drought years identified: 1994, 2019, 2020
+   Implication: Recurring drought risk threatens food security
+   Recommendation: Establish early warning systems and crop insurance programs
+
+
+======================================================================
+IMPLICATIONS FOR ENERGY SECTOR
+======================================================================
+
+1. Average annual rainfall: 588mm
+   Implication: Affects hydropower generation capacity
+   Recommendation: Diversify energy mix with solar/wind to reduce dependence on rainfall
+
+2. Distinct wet and dry seasons observed
+   Implication: Seasonal variation in hydropower output
+   Recommendation: Implement reservoir management strategies for year-round supply
+
+
+======================================================================
+IMPLICATIONS FOR DISASTER RISK MANAGEMENT
+======================================================================
+
+1. Extreme rainfall years: 2000, 2007, 2010
+   Implication: Increased flood risk in high-rainfall years
+   Recommendation: Strengthen flood early warning systems and emergency response capacity
+
+2. Recurring drought events detected
+   Implication: Water scarcity and agricultural losses
+   Recommendation: Develop drought contingency plans and water storage facilities
+
+
+======================================================================
+MACHINE LEARNING MODEL PERFORMANCE
+======================================================================
+
+Random Forest models trained on integrated ground station and ERA5
+satellite data. Evaluation on held-out test set (most recent 15% of data).
+Dataset split: 70% training | 15% validation | 15% test (temporal order).
+
+  Horizon              Accuracy       F1    ROC-AUC       R²     RMSE
+  ------------------------------------------------------------
+  1-Day  Forecast         99.1%    0.989      0.999    0.917    0.79 mm
+  7-Day  Forecast         96.4%    0.956      0.989    0.744    1.39 mm
+  30-Day Forecast         89.3%    0.876      0.969    0.319    2.27 mm
+  90-Day Forecast         92.4%    0.911      0.964    0.497    1.95 mm
+
+  Notes:
+  • Accuracy / F1 / ROC-AUC: rainfall occurrence classifier (rain vs no rain)
+  • R² / RMSE: rainfall amount regressor (mm), trained on rainy days only
+  • Negative R² for 30-day regression indicates high uncertainty at that horizon
+
+  Key capabilities:
+  • Multi-horizon forecasting (1, 7, 30, 90 days ahead)
+  • Rainfall occurrence classification (Yes/No + probability)
+  • Rainfall amount estimation (mm) on predicted rainy days
+
+
+======================================================================
+SEASONAL FORECAST (2026-2028)
+======================================================================
+
+Historical baseline: 725 mm/year (1990-2023 mean)
+Drought threshold  : <534 mm  |  Flood threshold: >1004 mm
+
+Method: Climatological mean ± inter-annual variability (historical std × 0.4)
+        Consistent with the web application's future predictions module.
+
+  Year        Predicted    vs Normal Outlook        Risk Assessment
+  ---------------------------------------------------------------------------
+  2026           674 mm -7.1%     NORMAL YEAR    Within normal range — no drought or flood risk indicated
+  2027           714 mm -1.6%     NORMAL YEAR    Within normal range — no drought or flood risk indicated
+  2028           699 mm -3.6%     NORMAL YEAR    Within normal range — no drought or flood risk indicated
+
+  Note: Forecasts are probabilistic estimates based on historical climatology.
+  They do not incorporate real-time atmospheric data or ENSO indices.
+
+
+======================================================================
+CONCLUSION
+======================================================================
+
+This analysis integrates 33 years of ground-based observations
+with ERA5 satellite reanalysis data to provide evidence-based
+insights for policy and planning decisions.
+
+The machine learning prediction system enables proactive
+decision-making in agriculture, energy, and disaster management
+sectors, supporting Zambia's climate resilience and food security.
+
+
+======================================================================
+END OF REPORT
+======================================================================

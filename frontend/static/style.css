@@ -1,0 +1,735 @@
+/* ═══════════════════════════════════════════════════════════
+   Zambia Rainfall Prediction System — Professional UI
+   ═══════════════════════════════════════════════════════════ */
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+    --blue:         #1a1a2e;
+    --blue-hover:   #0f0f1a;
+    --blue-light:   #f1f5f9;
+    --blue-mid:     #cbd5e1;
+    --green:        #15803d;
+    --green-light:  #f0fdf4;
+    --green-mid:    #bbf7d0;
+    --red:          #b91c1c;
+    --red-light:    #fef2f2;
+    --amber:        #b45309;
+    --amber-light:  #fffbeb;
+    --amber-mid:    #fde68a;
+    --teal:         #0e7490;
+    --teal-light:   #f0f9ff;
+    --teal-mid:     #bae6fd;
+    --text:         #0f172a;
+    --text-2:       #334155;
+    --text-muted:   #64748b;
+    --border:       #e2e8f0;
+    --border-dark:  #cbd5e1;
+    --bg:           #f8fafc;
+    --bg-2:         #f1f5f9;
+    --surface:      #ffffff;
+    --radius-sm:    4px;
+    --radius:       8px;
+    --radius-lg:    12px;
+    --shadow-sm:    0 1px 2px rgba(0,0,0,0.05);
+    --shadow:       0 1px 3px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04);
+    --shadow-md:    0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 13px;
+    line-height: 1.6;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ── Topbar (analysis page — uniform with hero topbar) ──── */
+.topbar {
+    background: rgba(0,0,0,0.88);
+    color: #fff;
+    padding: 0 32px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    backdrop-filter: blur(6px);
+}
+
+.topbar-brand {
+    font-size: 15px;
+    font-weight: 600;
+    color: #fff;
+    letter-spacing: 0.2px;
+}
+
+.topbar-left h1 {
+    font-size: 15px;
+    font-weight: 600;
+    color: #fff;
+    letter-spacing: 0.2px;
+}
+
+.topbar-sub {
+    font-size: 11px;
+    color: rgba(255,255,255,0.5);
+    margin-top: 1px;
+}
+
+.topbar-nav { display: flex; gap: 4px; }
+
+.nav-link {
+    padding: 5px 16px;
+    border-radius: 16px;
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.7);
+    text-decoration: none;
+    transition: background 0.15s, color 0.15s;
+    border: none;
+}
+.nav-link:hover { color: #fff; background: rgba(255,255,255,0.12); }
+.nav-link.active {
+    background: rgba(255,255,255,0.18);
+    color: #fff;
+    font-weight: 600;
+}
+
+/* ── Layout ─────────────────────────────────────────────── */
+.main { display: flex; flex-direction: column; min-height: 100vh; }
+
+.content {
+    padding: 28px 40px 48px;
+    display: flex;
+    flex-direction: column;
+    gap: 36px;
+    max-width: 1440px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+/* ── Hero section (AccuWeather style) ───────────────────── */
+@keyframes cloudDrift {
+    0%   { transform: scale(1.08) translateX(0); }
+    50%  { transform: scale(1.08) translateX(-18px); }
+    100% { transform: scale(1.08) translateX(0); }
+}
+
+.hero-section {
+    position: relative;
+    width: 100%;
+    min-height: 520px;       /* taller so cards are fully inside */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;        /* clip the animated image */
+}
+
+.hero-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 35%;
+    filter: brightness(0.88); /* brighter — less dark */
+    z-index: 0;
+    animation: cloudDrift 18s ease-in-out infinite;
+    transform-origin: center center;
+}
+
+.hero-dim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to bottom,
+        rgba(0,0,0,0.30) 0%,
+        rgba(0,0,0,0.15) 40%,
+        rgba(0,0,0,0.55) 100%
+    );
+    z-index: 1;
+}
+
+/* Thin topbar inside the hero */
+.hero-topbar {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 32px;
+    background: rgba(0,0,0,0.50);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.hero-brand { display: flex; align-items: center; gap: 8px; }
+.hero-brand-icon { font-size: 20px; }
+.hero-brand-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: #fff;
+    letter-spacing: 0.2px;
+}
+
+.hero-topnav { display: flex; gap: 4px; }
+
+.hero-topnav-link {
+    padding: 5px 16px;
+    border-radius: 16px;
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.75);
+    text-decoration: none;
+    transition: background 0.15s, color 0.15s;
+}
+.hero-topnav-link:hover { color: #fff; background: rgba(255,255,255,0.12); }
+.hero-topnav-link.active {
+    background: rgba(255,255,255,0.18);
+    color: #fff;
+    font-weight: 600;
+}
+
+/* Centred title */
+.hero-center {
+    position: relative;
+    z-index: 10;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 28px 24px 20px;
+    gap: 8px;
+}
+
+.hero-title {
+    font-size: 34px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.2px;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+
+.hero-sub {
+    font-size: 14px;
+    font-weight: 400;
+    color: rgba(255,255,255,0.80);
+    text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+}
+
+/* Cards row — fully inside the hero image */
+.hero-cards-row {
+    position: relative;
+    z-index: 10;
+    padding: 0 32px 32px;   /* bottom padding keeps cards inside hero */
+}
+
+.hero-cards-inner {
+    max-width: 1440px;
+    margin: 0 auto;
+}
+
+.hero-cards-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    color: rgba(255,255,255,0.65);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.hero-refresh {
+    font-size: 11px;
+    padding: 3px 10px;
+    background: rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.85);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 10px;
+    cursor: pointer;
+}
+.hero-refresh:hover { background: rgba(255,255,255,0.25); }
+
+/* Content below hero — no overlap needed, cards are inside */
+.content-below-hero {
+    padding-top: 28px !important;
+    background: var(--bg);
+}
+
+/* Remove old hero banner styles */
+.hero-banner, .hero-img, .hero-overlay,
+.hero-text, .hero-nav, .hero-nav-link,
+.section-overlap { all: unset; }
+
+@media (max-width: 640px) {
+    .hero-section   { min-height: 420px; }
+    .hero-title     { font-size: 22px; }
+    .hero-topbar    { padding: 12px 16px; }
+    .hero-cards-row { padding: 0 16px 24px; }
+}
+
+/* ── Section ─────────────────────────────────────────────── */
+.section { display: flex; flex-direction: column; gap: 14px; }
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.section-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.section-sub {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 2px;
+    font-weight: 400;
+}
+
+/* ── Divider between sections ─────────────────────────────── */
+.section + .section {
+    padding-top: 4px;
+    border-top: 1px solid var(--border);
+}
+
+/* ── Buttons ─────────────────────────────────────────────── */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 16px;
+    border: 1px solid var(--border-dark);
+    border-radius: var(--radius);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+    background: var(--surface);
+    color: var(--text-2);
+    transition: all 0.15s;
+    white-space: nowrap;
+}
+.btn:hover { background: var(--bg-2); border-color: #94a3b8; }
+
+.btn-primary {
+    background: var(--blue);
+    color: #fff;
+    border-color: var(--blue);
+}
+.btn-primary:hover { background: var(--blue-hover); border-color: var(--blue-hover); }
+
+.btn-sm { padding: 5px 12px; font-size: 11px; }
+
+.year-btn-group { display: flex; gap: 5px; flex-wrap: wrap; }
+
+.year-btn {
+    padding: 4px 14px;
+    border-radius: var(--radius);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid var(--border-dark);
+    background: var(--surface);
+    color: var(--text-2);
+    font-family: inherit;
+    transition: all 0.15s;
+}
+.year-btn:hover { background: var(--bg-2); }
+.year-btn.active {
+    background: var(--blue);
+    color: #fff;
+    border-color: var(--blue);
+    font-weight: 600;
+}
+
+/* ── Forecast cards ──────────────────────────────────────── */
+.forecast-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+.forecast-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 20px 22px;
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.2s;
+}
+.forecast-card:hover { box-shadow: var(--shadow-md); }
+
+.fc-horizon {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+}
+
+.fc-verdict {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 2px;
+    line-height: 1.2;
+}
+
+.fc-date {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+}
+
+.fc-divider {
+    height: 1px;
+    background: var(--border);
+    margin-bottom: 12px;
+}
+
+.fc-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0;
+    font-size: 12px;
+}
+
+.fc-label { color: var(--text-muted); }
+.fc-value { font-weight: 600; color: var(--text-2); }
+
+.badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+    font-size: 11px;
+    font-weight: 600;
+}
+.badge-high   { background: var(--green-light); color: var(--green); border: 1px solid var(--green-mid); }
+.badge-medium { background: var(--amber-light); color: var(--amber); border: 1px solid var(--amber-mid); }
+.badge-low    { background: var(--red-light);   color: var(--red);   border: 1px solid #fecaca; }
+
+/* ── Rainfall Calendar ───────────────────────────────────── */
+.lookup-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 22px 24px;
+    box-shadow: var(--shadow-sm);
+}
+
+.lookup-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+}
+
+.lookup-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+.date-input {
+    padding: 8px 12px;
+    border: 1px solid var(--border-dark);
+    border-radius: var(--radius);
+    font-size: 13px;
+    font-family: inherit;
+    outline: none;
+    background: var(--bg);
+    color: var(--text);
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+.date-input:focus {
+    border-color: var(--blue);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(29,78,216,0.1);
+}
+
+/* Pattern result */
+.pattern-result {
+    margin-top: 18px;
+    border-top: 1px solid var(--border);
+    padding-top: 18px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.pr-block {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+}
+
+.pr-label { font-size: 10px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+.pr-value { font-size: 17px; font-weight: 700; color: var(--text); }
+.pr-note  { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+.pr-season-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: var(--radius-sm);
+    font-size: 11px;
+    font-weight: 600;
+    background: var(--blue-light);
+    color: var(--blue);
+    border: 1px solid var(--blue-mid);
+    margin-bottom: 14px;
+}
+
+.pr-full-width { grid-column: 1 / -1; }
+
+.pr-info-box {
+    grid-column: 1 / -1;
+    background: var(--blue-light);
+    border: 1px solid var(--blue-mid);
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    font-size: 12px;
+    color: var(--blue);
+    line-height: 1.5;
+}
+
+/* ── Chart cards ─────────────────────────────────────────── */
+.chart-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 20px 24px;
+    box-shadow: var(--shadow-sm);
+}
+#historicalChart, #futureChart { width: 100%; height: 380px; }
+
+/* ── KPI row ─────────────────────────────────────────────── */
+.summary-kpi-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+}
+
+.kpi-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 16px 18px;
+    box-shadow: var(--shadow-sm);
+}
+
+.kpi-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+}
+
+.kpi-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+}
+
+.kpi-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+
+/* ── Summary panels grid ─────────────────────────────────── */
+.summary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+}
+
+.summary-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 20px 22px;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.panel-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+}
+
+.panel-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* ── Planting calendar ───────────────────────────────────── */
+.planting-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 5px;
+}
+
+.pm {
+    border-radius: var(--radius);
+    padding: 8px 4px;
+    text-align: center;
+    border: 1px solid transparent;
+}
+
+.pm.wet  { background: var(--green-light); border-color: var(--green-mid); }
+.pm.dry  { background: var(--bg-2); border-color: var(--border); }
+
+.pm-name { display: block; font-size: 11px; font-weight: 700; color: var(--text-2); }
+.pm-val  { display: block; font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+
+.planting-legend {
+    display: flex;
+    gap: 16px;
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+.leg-dot {
+    display: inline-block;
+    width: 9px; height: 9px;
+    border-radius: 2px;
+    margin-right: 4px;
+    vertical-align: middle;
+}
+.leg-dot.wet { background: #86efac; }
+.leg-dot.dry { background: #cbd5e1; }
+
+/* ── Risk table ──────────────────────────────────────────── */
+.risk-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.risk-table th {
+    text-align: left;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--text-muted);
+    padding: 0 0 10px;
+    border-bottom: 1px solid var(--border);
+}
+.risk-table td {
+    padding: 10px 0 6px;
+    vertical-align: top;
+}
+
+.risk-year-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+    font-size: 11px;
+    font-weight: 600;
+    margin: 2px 2px 2px 0;
+}
+.risk-year-tag.drought { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
+.risk-year-tag.flood   { background: #f1f5f9; color: #1e40af; border: 1px solid #bfdbfe; }
+
+.risk-note {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 6px;
+    line-height: 1.4;
+}
+
+/* ── Gradient table ──────────────────────────────────────── */
+.gradient-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.gradient-table th {
+    text-align: left;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--text-muted);
+    padding: 0 0 10px;
+    border-bottom: 1px solid var(--border);
+}
+.gradient-table td {
+    padding: 9px 0;
+    border-bottom: 1px solid var(--bg-2);
+    font-size: 12px;
+    vertical-align: middle;
+}
+.gradient-table tr:last-child td { border-bottom: none; }
+
+.region-badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: var(--radius-sm);
+    font-size: 11px;
+    font-weight: 600;
+}
+.region-badge.north   { background: var(--blue-light);  color: var(--blue);  border: 1px solid var(--blue-mid); }
+.region-badge.central { background: var(--green-light); color: var(--green); border: 1px solid var(--green-mid); }
+.region-badge.south   { background: var(--amber-light); color: var(--amber); border: 1px solid var(--amber-mid); }
+
+/* ── States ──────────────────────────────────────────────── */
+.loading-state {
+    padding: 40px;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 13px;
+    grid-column: 1 / -1;
+}
+
+.error-msg {
+    background: var(--red-light);
+    border: 1px solid #fecaca;
+    color: var(--red);
+    padding: 10px 14px;
+    border-radius: var(--radius);
+    font-size: 12px;
+    margin-top: 10px;
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 1200px) {
+    .summary-grid { grid-template-columns: 1fr 1fr; }
+    .summary-kpi-row { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 900px) {
+    .forecast-grid { grid-template-columns: repeat(2, 1fr); }
+    .summary-kpi-row { grid-template-columns: repeat(2, 1fr); }
+    .summary-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 640px) {
+    .content { padding: 16px; }
+    .topbar  { padding: 0 16px; }
+    .forecast-grid { grid-template-columns: 1fr; }
+    .pattern-result { grid-template-columns: 1fr; }
+}

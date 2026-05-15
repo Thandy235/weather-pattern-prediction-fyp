@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analysis — Choma, Zambia Rainfall Prediction System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+          rel="stylesheet" media="print" onload="this.media='all'">
+</head>
+<body>
+<div class="main">
+
+    <!-- Topbar — uniform with forecasts page -->
+    <header class="topbar">
+        <div class="topbar-left">
+            <span class="topbar-brand">Choma</span>
+        </div>
+        <nav class="topbar-nav">
+            <a href="/" class="nav-link">Forecasts</a>
+            <a href="/analysis" class="nav-link active">Analysis</a>
+        </nav>
+    </header>
+
+    <div class="content">
+
+        <!-- ══ 1. FUTURE YEARLY PREDICTIONS ══════════════════════════════ -->
+        <section class="section" id="sec-future">
+            <div class="section-header">
+                <div>
+                    <div class="section-title">Future Yearly Rainfall Predictions</div>
+                    <div class="section-sub">Predicted monthly totals vs historical average</div>
+                </div>
+                <div id="yearButtons" class="year-btn-group"></div>
+            </div>
+            <div class="chart-card">
+                <div id="futureChart"></div>
+            </div>
+        </section>
+
+        <!-- ══ 2. RAINFALL SUMMARY & DECISION SUPPORT ════════════════════ -->
+        <section class="section" id="sec-summary">
+            <div class="section-header">
+                <div>
+                    <div class="section-title">Rainfall Summary &amp; Decision Support</div>
+                    <div class="section-sub">Select a year above to compare predicted totals against historical benchmarks</div>
+                </div>
+                <div id="summaryYearButtons" class="year-btn-group"></div>
+            </div>
+
+            <!-- KPI row -->
+            <div class="summary-kpi-row">
+                <div class="kpi-card" id="kpiPredCard" style="display:none">
+                    <div class="kpi-label">Predicted Annual Total</div>
+                    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                        <div class="kpi-value" id="kpiPredVal">—</div>
+                        <div id="kpiYearOutlook" style="display:none"></div>
+                    </div>
+                    <div class="kpi-sub" id="kpiPredSub">Selected year</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Historical Annual Average</div>
+                    <div class="kpi-value" id="kpiHistAvg">— mm</div>
+                    <div class="kpi-sub">Mean across 1990 – 2023</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Average Rainy Days / Year</div>
+                    <div class="kpi-value" id="kpiRainyDays">— days</div>
+                    <div class="kpi-sub" id="kpiRainyDaysSub">Days with rainfall ≥ 1 mm</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Driest Year on Record</div>
+                    <div class="kpi-value" id="kpiMinYr">—</div>
+                    <div class="kpi-sub" id="kpiMinVal">— mm total</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Wettest Year on Record</div>
+                    <div class="kpi-value" id="kpiMaxYr">—</div>
+                    <div class="kpi-sub" id="kpiMaxVal">— mm total</div>
+                </div>
+            </div>
+
+            <!-- Three-panel row -->
+            <div class="summary-grid">
+
+                <!-- Panel A: Farmer Planting Calendar -->
+                <div class="summary-panel">
+                    <div class="panel-title" id="plantingTitle">Farmer Planting Calendar</div>
+                    <p class="panel-desc">Planting should begin when monthly rainfall exceeds 25 mm.</p>
+                    <div class="planting-grid" id="plantingGrid"></div>
+                    <div class="planting-legend">
+                        <span><span class="leg-dot wet"></span>Rainy</span>
+                        <span><span class="leg-dot dry"></span>Dry</span>
+                    </div>
+                </div>
+
+                <!-- Panel B: Disaster Risk Indicators -->
+                <div class="summary-panel">
+                    <div class="panel-title">Disaster Risk Indicators</div>
+                    <table class="risk-table">
+                        <thead>
+                            <tr>
+                                <th style="width:50%">Drought Risk Years</th>
+                                <th>Flood Risk Years</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div style="margin-bottom:6px">
+                                        <span class="risk-year-tag drought">1994</span>
+                                        <span class="risk-year-tag drought">2019</span>
+                                        <span class="risk-year-tag drought">2021</span>
+                                        <span class="risk-year-tag drought">2022</span>
+                                    </div>
+                                    <div class="risk-note">Annual total below <strong>491 mm</strong></div>
+                                </td>
+                                <td>
+                                    <div style="margin-bottom:6px">
+                                        <span class="risk-year-tag flood">1997</span>
+                                        <span class="risk-year-tag flood">2000</span>
+                                        <span class="risk-year-tag flood">2007</span>
+                                        <span class="risk-year-tag flood">2010</span>
+                                    </div>
+                                    <div class="risk-note">Annual total above <strong>1,006 mm</strong></div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div id="futureRiskAlert" style="margin-top:12px;"></div>
+
+                    <div style="margin-top:14px; padding-top:12px; border-top:1px solid var(--border);">
+                        <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-muted); margin-bottom:6px;">Irrigation Scheduling</div>
+                        <div style="font-size:12px; color:var(--text-2); line-height:1.6;">
+                            During <strong>May to October</strong>, average rainfall is under 10 mm/month which is insufficient for any rainfed crop.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panel C: Zambia Rainfall Gradient -->
+                <div class="summary-panel">
+                    <div class="panel-title">Zambia Rainfall Gradient</div>
+                    <p class="panel-desc">Rainfall decreases from north to south. Choma is in the lowest rainfall zone.</p>
+                    <table class="gradient-table">
+                        <thead>
+                            <tr>
+                                <th>Region</th>
+                                <th>Annual Rainfall</th>
+                                <th>Characteristics</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="region-badge north">Northern</span></td>
+                                <td><strong>1,000 – 1,500 mm</strong></td>
+                                <td style="color:var(--text-muted); font-size:12px">Highest rainfall, reliable seasons</td>
+                            </tr>
+                            <tr>
+                                <td><span class="region-badge central">Central</span></td>
+                                <td><strong>800 – 1,000 mm</strong></td>
+                                <td style="color:var(--text-muted); font-size:12px">Moderate, some variability</td>
+                            </tr>
+                            <tr>
+                                <td><span class="region-badge south">Southern</span></td>
+                                <td><strong>700 – 800 mm</strong></td>
+                                <td style="color:var(--text-muted); font-size:12px">Lowest, high drought risk</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ══ 3. HISTORICAL RECORD ═══════════════════════════════════════ -->
+        <section class="section" id="sec-historical">
+            <div class="section-title">Historical Rainfall &amp; Temperature Record</div>
+            <div class="section-sub">Choma monthly totals, last 5 years</div>
+            <div class="chart-card">
+                <div id="historicalChart"></div>
+            </div>
+        </section>
+
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

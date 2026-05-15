@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>choma, Zambia Rainfall Prediction System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+          rel="stylesheet" media="print" onload="this.media='all'">
+</head>
+<body>
+<div class="main">
+
+    <!-- ══ HERO SECTION — full viewport hero with topbar inside ══ -->
+    <div class="hero-section">
+        <img src="{{ url_for('static', filename='cloud.jpg') }}"
+             alt="Rainfall cloud"
+             class="hero-bg">
+        <div class="hero-dim"></div>
+
+        <!-- Thin topbar sitting on top of the image -->
+        <header class="hero-topbar">
+            <div class="hero-brand">
+                <span class="hero-brand-name">Choma District</span>
+            </div>
+            <nav class="hero-topnav">
+                <a href="/" class="hero-topnav-link active">Forecasts</a>
+                <a href="/analysis" class="hero-topnav-link">Analysis</a>
+            </nav>
+        </header>
+
+        <!-- Centred title text -->
+        <div class="hero-center">
+            <div class="hero-title">Rainfall Pattern Prediction</div>
+            <div class="hero-sub">Southern Province, Zambia</div>
+        </div>
+
+        <!-- Forecast cards overlapping the bottom of the hero -->
+        <div class="hero-cards-row">
+            <div class="hero-cards-inner">
+                <div class="hero-cards-label">CURRENT FORECASTS
+                    <button class="btn btn-sm hero-refresh" onclick="refreshAll()">Refresh</button>
+                </div>
+                <div class="forecast-grid" id="forecastGrid">
+                    <div class="loading-state">Loading predictions…</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="content content-below-hero">
+
+        <!-- ══ RAINFALL CALENDAR ══════════════════════════════════════════ -->
+        <section class="section" id="sec-pattern">
+            <div class="section-title">Rainfall Calendar</div>
+            <div class="section-sub">Select any date to see the historical rainfall pattern for that time of year</div>
+            <div class="lookup-card">
+                <div class="lookup-label">Select Date</div>
+                <div class="lookup-row">
+                    <input type="date" id="predictDateInput" class="date-input">
+                    <button class="btn btn-primary" onclick="predictForDate()">Predict Pattern</button>
+                </div>
+                <div id="datePredictResult"></div>
+            </div>
+        </section>
+
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

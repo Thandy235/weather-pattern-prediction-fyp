@@ -1,0 +1,5 @@
+horizon,samples,accuracy,precision,recall,f1
+1day,59,0.339,0,0.0,0
+7day,59,0.339,0,0.0,0
+30day,59,0.339,0,0.0,0
+90day,59,0.339,0,0.0,0
