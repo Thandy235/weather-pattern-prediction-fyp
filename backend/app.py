@@ -13,8 +13,8 @@ import json
 from src.predict import RainfallPredictor
 
 app = Flask(__name__, 
-            template_folder='../frontend/templates',
-            static_folder='../frontend/static')
+            template_folder='frontend/templates',
+            static_folder='frontend/static')
 CORS(app)
 
 # Initialize predictor
