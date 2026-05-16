@@ -56,12 +56,13 @@ _predictor_error = None
 def init_predictor():
     global predictor, _predictor_error
     try:
-        predictor = RainfallPredictor()
+        predictor = RainfallPredictor()  # always keep the object so load_errors is accessible
         if len(predictor.models) == 0:
             _predictor_error = (
                 f"Predictor initialised but no models were loaded. "
                 f"Model directory: {predictor.model_dir.resolve()} — "
-                f"exists: {predictor.model_dir.exists()}"
+                f"exists: {predictor.model_dir.exists()}. "
+                f"Load errors: {predictor.load_errors}"
             )
             print(f"✗ {_predictor_error}")
             return False
@@ -562,6 +563,7 @@ def diagnostics():
         'predictor_loaded':  predictor is not None,
         'models_loaded':     len(predictor.models) if predictor else 0,
         'predictor_error':   _predictor_error,
+        'model_load_errors': predictor.load_errors if predictor else ['predictor is None'],
         'data_files': {
             'features_complete':       (data_dir / 'features_complete.csv').exists(),
             'choma_daily_data':        (data_dir / 'choma_daily_data.csv').exists(),

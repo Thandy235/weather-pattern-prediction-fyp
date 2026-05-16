@@ -77,27 +77,39 @@ class RainfallPredictor:
                     self.models[f'{horizon}_classifier'] = joblib.load(clf_file)
                     print(f"[predict]   ✓ classifier loaded")
                 except Exception as e:
-                    print(f"[predict]   ✗ classifier FAILED: {e}")
+                    msg = f"{horizon} classifier: {type(e).__name__}: {e}"
+                    print(f"[predict]   ✗ {msg}")
+                    self.load_errors.append(msg)
             else:
-                print(f"[predict]   ✗ classifier not found: {clf_file}")
+                msg = f"{horizon} classifier: file not found at {clf_file}"
+                print(f"[predict]   ✗ {msg}")
+                self.load_errors.append(msg)
 
             if reg_file.exists():
                 try:
                     self.models[f'{horizon}_regressor'] = joblib.load(reg_file)
                     print(f"[predict]   ✓ regressor loaded")
                 except Exception as e:
-                    print(f"[predict]   ✗ regressor FAILED: {e}")
+                    msg = f"{horizon} regressor: {type(e).__name__}: {e}"
+                    print(f"[predict]   ✗ {msg}")
+                    self.load_errors.append(msg)
             else:
-                print(f"[predict]   ✗ regressor not found: {reg_file}")
+                msg = f"{horizon} regressor: file not found at {reg_file}"
+                print(f"[predict]   ✗ {msg}")
+                self.load_errors.append(msg)
 
             if feat_file.exists():
                 try:
                     self.feature_names[horizon] = joblib.load(feat_file)
                     print(f"[predict]   ✓ feature names loaded ({len(self.feature_names[horizon])} features)")
                 except Exception as e:
-                    print(f"[predict]   ✗ feature names FAILED: {e}")
+                    msg = f"{horizon} feature_names: {type(e).__name__}: {e}"
+                    print(f"[predict]   ✗ {msg}")
+                    self.load_errors.append(msg)
             else:
-                print(f"[predict]   ✗ feature names not found: {feat_file}")
+                msg = f"{horizon} feature_names: file not found at {feat_file}"
+                print(f"[predict]   ✗ {msg}")
+                self.load_errors.append(msg)
 
             if means_file.exists():
                 try:
