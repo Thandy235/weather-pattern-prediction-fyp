@@ -54,28 +54,61 @@ class RainfallPredictor:
         models are available.
         """
         horizons = ['1day', '7day', '30day', '90day']
-        
+
+        print(f"[predict] Model directory: {self.model_dir.resolve()}")
+        print(f"[predict] Model directory exists: {self.model_dir.exists()}")
+
+        if self.model_dir.exists():
+            found = list(self.model_dir.glob('*.pkl'))
+            print(f"[predict] .pkl files found: {len(found)}")
+        else:
+            print("[predict] WARNING: model directory not found — no models will be loaded")
+
         for horizon in horizons:
             clf_file   = self.model_dir / f'rf_classifier_{horizon}.pkl'
             reg_file   = self.model_dir / f'rf_regressor_{horizon}.pkl'
             feat_file  = self.model_dir / f'feature_names_{horizon}.pkl'
             means_file = self.model_dir / f'feature_means_{horizon}.pkl'
-            
+
+            print(f"[predict] Loading {horizon}...")
+
             if clf_file.exists():
-                self.models[f'{horizon}_classifier'] = joblib.load(clf_file)
-            
+                try:
+                    self.models[f'{horizon}_classifier'] = joblib.load(clf_file)
+                    print(f"[predict]   ✓ classifier loaded")
+                except Exception as e:
+                    print(f"[predict]   ✗ classifier FAILED: {e}")
+            else:
+                print(f"[predict]   ✗ classifier not found: {clf_file}")
+
             if reg_file.exists():
-                self.models[f'{horizon}_regressor'] = joblib.load(reg_file)
+                try:
+                    self.models[f'{horizon}_regressor'] = joblib.load(reg_file)
+                    print(f"[predict]   ✓ regressor loaded")
+                except Exception as e:
+                    print(f"[predict]   ✗ regressor FAILED: {e}")
+            else:
+                print(f"[predict]   ✗ regressor not found: {reg_file}")
 
             if feat_file.exists():
-                # Load the ordered list of feature column names used during training
-                self.feature_names[horizon] = joblib.load(feat_file)
+                try:
+                    self.feature_names[horizon] = joblib.load(feat_file)
+                    print(f"[predict]   ✓ feature names loaded ({len(self.feature_names[horizon])} features)")
+                except Exception as e:
+                    print(f"[predict]   ✗ feature names FAILED: {e}")
+            else:
+                print(f"[predict]   ✗ feature names not found: {feat_file}")
 
             if means_file.exists():
-                # Load the training-set column means for NaN imputation
-                self.feature_means[horizon] = joblib.load(means_file)
-        
-        print(f"Loaded {len(self.models)} models")
+                try:
+                    self.feature_means[horizon] = joblib.load(means_file)
+                    print(f"[predict]   ✓ feature means loaded")
+                except Exception as e:
+                    print(f"[predict]   ✗ feature means FAILED: {e}")
+            else:
+                print(f"[predict]   - feature means not found (will use 0 for missing values): {means_file}")
+
+        print(f"[predict] Done — {len(self.models)} model(s) loaded successfully")
     
     def prepare_features(self, input_data, horizon='1day'):
         """
