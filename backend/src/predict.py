@@ -17,6 +17,10 @@ from pathlib import Path
 import joblib  # For loading saved model files
 from datetime import datetime, timedelta
 
+# Resolve paths relative to this file so the module works regardless of the
+# working directory (important when launched via gunicorn or from project root).
+_BASE = Path(__file__).parent.parent  # backend/
+
 
 class RainfallPredictor:
     """
@@ -29,7 +33,8 @@ class RainfallPredictor:
 
     def __init__(self):
         # Where the trained model .pkl files are stored
-        self.model_dir = Path('models')
+        # Anchored to backend/ so this works from any working directory.
+        self.model_dir = _BASE / 'models'
         self.models = {}         # Stores loaded model objects: {key: model}
         self.feature_names = {}  # {horizon: [col1, col2, ...]} — exact training column order
         self.feature_means = {}  # {horizon: {col: mean}} — for filling NaNs at inference time
@@ -240,7 +245,7 @@ if __name__ == '__main__':
     predictor = RainfallPredictor()
     
     # Load the feature matrix and use the most recent row as "current conditions"
-    features_file = Path('data/processed/features_complete.csv')
+    features_file = _BASE / 'data/processed/features_complete.csv'
     if features_file.exists():
         df = pd.read_csv(features_file)
         

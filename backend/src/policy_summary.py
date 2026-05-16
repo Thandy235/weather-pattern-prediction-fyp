@@ -19,6 +19,10 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+# Resolve paths relative to this file so the module works regardless of the
+# working directory (important when launched via gunicorn or from project root).
+_BASE = Path(__file__).parent.parent  # backend/
+
 
 class PolicySummaryGenerator:
     """
@@ -34,11 +38,12 @@ class PolicySummaryGenerator:
     """
 
     def __init__(self):
-        # Input data directories
-        self.data_dir = Path('data/processed')
-        self.model_dir = Path('models')
+        # Input data directories — anchored to backend/ so this works from any
+        # working directory (gunicorn, project root, or inside backend/).
+        self.data_dir  = _BASE / 'data/processed'
+        self.model_dir = _BASE / 'models'
         # Where to save the generated reports
-        self.output_dir = Path('policy_reports')
+        self.output_dir = _BASE / 'policy_reports'
         self.output_dir.mkdir(parents=True, exist_ok=True)
         
     def load_data(self):

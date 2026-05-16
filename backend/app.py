@@ -12,7 +12,11 @@ import json
 
 from src.predict import RainfallPredictor
 
-app = Flask(__name__, 
+# Anchor all data/model paths to backend/ so the app works regardless of
+# the working directory (gunicorn, project root, or inside backend/).
+_BASE = Path(__file__).parent  # backend/
+
+app = Flask(__name__,
             template_folder='frontend/templates',
             static_folder='frontend/static')
 CORS(app)
@@ -26,7 +30,7 @@ def get_features_df():
     """Load and cache features dataframe"""
     global _features_df
     if _features_df is None:
-        features_file = Path('data/processed/features_complete.csv')
+        features_file = _BASE / 'data/processed/features_complete.csv'
         if features_file.exists():
             _features_df = pd.read_csv(features_file)
     return _features_df
@@ -38,8 +42,8 @@ def get_station_df():
     """
     global _station_df
     if _station_df is None:
-        harmonized_file = Path('data/processed/choma_harmonized_unified.csv')
-        station_file    = Path('data/processed/choma_daily_data.csv')
+        harmonized_file = _BASE / 'data/processed/choma_harmonized_unified.csv'
+        station_file    = _BASE / 'data/processed/choma_daily_data.csv'
         if harmonized_file.exists():
             _station_df = pd.read_csv(harmonized_file, parse_dates=['date'])
         elif station_file.exists():
@@ -158,8 +162,8 @@ def future_predictions():
     try:
         # Use harmonized unified dataset (station + ERA5 gap-filled)
         # Falls back to station-only if harmonized not available
-        harmonized_file = Path('data/processed/choma_harmonized_unified.csv')
-        station_file    = Path('data/processed/choma_daily_data.csv')
+        harmonized_file = _BASE / 'data/processed/choma_harmonized_unified.csv'
+        station_file    = _BASE / 'data/processed/choma_daily_data.csv'
         src_file = harmonized_file if harmonized_file.exists() else station_file
         if not src_file.exists():
             return jsonify({'error': 'Station data not found'}), 404
@@ -294,7 +298,7 @@ def predict():
 def policy_summary():
     """Return the latest generated policy summary report"""
     try:
-        reports_dir = Path('policy_reports')
+        reports_dir = _BASE / 'policy_reports'
         md_files = sorted(reports_dir.glob('policy_summary_*.md'), reverse=True)
         txt_files = sorted(reports_dir.glob('policy_summary_*.txt'), reverse=True)
 
@@ -472,7 +476,7 @@ def historical():
 def stats():
     """Get model statistics"""
     try:
-        summary_file = Path('models/training_summary.txt')
+        summary_file = _BASE / 'models/training_summary.txt'
         if not summary_file.exists():
             return jsonify({'error': 'Training summary not found'}), 404
         
@@ -496,10 +500,10 @@ def status():
     
     # Check data files
     data_files = {
-        'harmonized_dataset': Path('data/processed/choma_harmonized_unified.csv').exists(),
-        'ground_station':     Path('data/processed/choma_daily_data.csv').exists(),
-        'era5':               Path('data/era5/era5_choma_daily.csv').exists(),
-        'features':           Path('data/processed/features_complete.csv').exists()
+        'harmonized_dataset': (_BASE / 'data/processed/choma_harmonized_unified.csv').exists(),
+        'ground_station':     (_BASE / 'data/processed/choma_daily_data.csv').exists(),
+        'era5':               (_BASE / 'data/era5/era5_choma_daily.csv').exists(),
+        'features':           (_BASE / 'data/processed/features_complete.csv').exists()
     }
     
     status_info['data_files'] = data_files

@@ -9,21 +9,25 @@ values here and every other script picks them up automatically.
 
 from pathlib import Path
 
+# Anchor all paths to the backend/ directory so they resolve correctly
+# regardless of the working directory when the process is launched.
+_BASE = Path(__file__).parent  # backend/
+
 # ============================================================================
 # DATA CONFIGURATION
 # ============================================================================
 
 # Where the raw Choma station spreadsheets live (Excel/CSV files from ZEMA)
-DATA_DIR = Path('choma station data')
+DATA_DIR = _BASE / 'choma station data'
 
 # Where cleaned and processed CSV files are written to
-PROCESSED_DIR = Path('data/processed')
+PROCESSED_DIR = _BASE / 'data/processed'
 
 # Where ERA5 NetCDF and CSV files are stored
-ERA5_DIR = Path('data/era5')
+ERA5_DIR = _BASE / 'data/era5'
 
 # Where trained model files (.pkl) are saved
-MODEL_DIR = Path('models')
+MODEL_DIR = _BASE / 'models'
 
 # GPS coordinates of the Choma weather station (decimal degrees)
 # Negative latitude = Southern Hemisphere
