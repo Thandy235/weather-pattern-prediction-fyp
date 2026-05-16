@@ -50,13 +50,26 @@ def get_station_df():
             _station_df = pd.read_csv(station_file, parse_dates=['date'])
     return _station_df
 
+# Store the predictor init error so it can be surfaced in API responses
+_predictor_error = None
+
 def init_predictor():
-    global predictor
+    global predictor, _predictor_error
     try:
         predictor = RainfallPredictor()
+        if len(predictor.models) == 0:
+            _predictor_error = (
+                f"Predictor initialised but no models were loaded. "
+                f"Model directory: {predictor.model_dir.resolve()} — "
+                f"exists: {predictor.model_dir.exists()}"
+            )
+            print(f"✗ {_predictor_error}")
+            return False
+        _predictor_error = None
         return True
     except Exception as e:
-        print(f"Error initializing predictor: {e}")
+        _predictor_error = f"{type(e).__name__}: {e}"
+        print(f"✗ Error initializing predictor: {_predictor_error}")
         return False
 
 
@@ -237,7 +250,12 @@ def predict():
     rather than a stale fixed row from 2023.
     """
     if predictor is None:
-        return jsonify({'error': 'Models not loaded'}), 500
+        reason = _predictor_error or 'Predictor not initialised — unknown reason'
+        return jsonify({
+            'error': 'Models not loaded',
+            'reason': reason,
+            'hint': 'Check /api/diagnostics for full system status'
+        }), 500
 
     try:
         df = get_features_df()
@@ -509,6 +527,49 @@ def status():
     status_info['data_files'] = data_files
     
     return jsonify(status_info)
+
+
+@app.route('/api/diagnostics', methods=['GET'])
+def diagnostics():
+    """
+    Full deployment diagnostic — shows exactly what loaded, what's missing,
+    and where the app is looking for files.
+    Hit this endpoint first when debugging a deployment issue.
+    """
+    model_dir = _BASE / 'models'
+    data_dir  = _BASE / 'data/processed'
+
+    # List every .pkl file actually present in the models directory
+    pkl_files = sorted(f.name for f in model_dir.glob('*.pkl')) if model_dir.exists() else []
+
+    # Check each expected model file individually
+    horizons = ['1day', '7day', '30day', '90day']
+    model_checks = {}
+    for h in horizons:
+        model_checks[h] = {
+            'classifier':    (model_dir / f'rf_classifier_{h}.pkl').exists(),
+            'regressor':     (model_dir / f'rf_regressor_{h}.pkl').exists(),
+            'feature_names': (model_dir / f'feature_names_{h}.pkl').exists(),
+            'feature_means': (model_dir / f'feature_means_{h}.pkl').exists(),
+        }
+
+    info = {
+        'base_dir':          str(_BASE.resolve()),
+        'model_dir':         str(model_dir.resolve()),
+        'model_dir_exists':  model_dir.exists(),
+        'pkl_files_present': pkl_files,
+        'model_checks':      model_checks,
+        'predictor_loaded':  predictor is not None,
+        'models_loaded':     len(predictor.models) if predictor else 0,
+        'predictor_error':   _predictor_error,
+        'data_files': {
+            'features_complete':       (data_dir / 'features_complete.csv').exists(),
+            'choma_daily_data':        (data_dir / 'choma_daily_data.csv').exists(),
+            'choma_harmonized_unified':(data_dir / 'choma_harmonized_unified.csv').exists(),
+        },
+        'timestamp': datetime.now().isoformat(),
+    }
+    return jsonify(info)
 
 
 if __name__ == '__main__':
