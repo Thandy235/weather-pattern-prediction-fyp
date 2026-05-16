@@ -10,7 +10,14 @@ from pathlib import Path
 from datetime import datetime
 import json
 
-from src.predict import RainfallPredictor
+# Catch import errors so they surface in /api/diagnostics rather than
+# silently crashing the app at startup.
+_import_error = None
+try:
+    from src.predict import RainfallPredictor
+except Exception as _e:
+    _import_error = f"{type(_e).__name__}: {_e}"
+    RainfallPredictor = None
 
 # Anchor all data/model paths to backend/ so the app works regardless of
 # the working directory (gunicorn, project root, or inside backend/).
@@ -55,6 +62,10 @@ _predictor_error = None
 
 def init_predictor():
     global predictor, _predictor_error
+    if RainfallPredictor is None:
+        _predictor_error = f"Import failed: {_import_error}"
+        print(f"✗ {_predictor_error}")
+        return False
     try:
         predictor = RainfallPredictor()  # always keep the object so load_errors is accessible
         if len(predictor.models) == 0:
@@ -562,8 +573,9 @@ def diagnostics():
         'model_checks':      model_checks,
         'predictor_loaded':  predictor is not None,
         'models_loaded':     len(predictor.models) if predictor else 0,
+        'import_error':      _import_error,
         'predictor_error':   _predictor_error,
-        'model_load_errors': predictor.load_errors if predictor else ['predictor is None'],
+        'model_load_errors': predictor.load_errors if predictor else ['predictor is None — see import_error or predictor_error'],
         'data_files': {
             'features_complete':       (data_dir / 'features_complete.csv').exists(),
             'choma_daily_data':        (data_dir / 'choma_daily_data.csv').exists(),
