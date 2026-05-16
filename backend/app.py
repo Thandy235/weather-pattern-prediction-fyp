@@ -32,6 +32,8 @@ CORS(app)
 predictor = None
 _features_df = None  # cached features
 _station_df = None   # cached station data
+
+def get_features_df():
     """Load and cache features dataframe"""
     global _features_df
     if _features_df is None:
