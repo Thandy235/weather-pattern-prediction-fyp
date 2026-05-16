@@ -32,8 +32,6 @@ CORS(app)
 predictor = None
 _features_df = None  # cached features
 _station_df = None   # cached station data
-
-def get_features_df():
     """Load and cache features dataframe"""
     global _features_df
     if _features_df is None:
@@ -83,6 +81,10 @@ def init_predictor():
         _predictor_error = f"{type(e).__name__}: {e}"
         print(f"✗ Error initializing predictor: {_predictor_error}")
         return False
+
+
+# Run at module load time so gunicorn picks it up without needing __main__
+init_predictor()
 
 
 @app.route('/')
